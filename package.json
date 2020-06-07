@@ -1,0 +1,25 @@
+{
+  "name": "weather-reporter-nodejs",
+  "version": "1.0.0",
+  "description": "This app will help you to get the weather details of your preferred area from darksky.net",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dushansmcf/weather-reporter-nodejs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dushansmcf/weather-reporter-nodejs/issues"
+  },
+  "homepage": "https://github.com/dushansmcf/weather-reporter-nodejs#readme",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "https": "^1.0.0",
+    "yargs": "^15.3.1"
+  }
+}
