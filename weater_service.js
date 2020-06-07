@@ -12,6 +12,12 @@ const callbackFromGetLocationIdByNameAndCountry = (apiKey, cityId) => {
     getLocationWeatherByID(apiKey, cityId);
 }
 
+const callbackDueToError = (code, message) => {
+    console.log(chalk.red("Error occured while calling the Wther API. Please check the given parameters again."));
+    console.log(chalk.red("Error Code: "+code));
+    console.log(chalk.red("Error Message: "+message));
+}
+
 // Finding location Id by name and country
 const getLocationIdByNameAndCountry = (apiKey, locationText, countyText) => {
     citySearchBaseURL = citySearchBaseURL +'?apikey='+apiKey+'&q='+locationText;
@@ -27,16 +33,23 @@ const getLocationIdByNameAndCountry = (apiKey, locationText, countyText) => {
 
         // The whole response has been received. Print out the result.
         resp.on('end', () => {
-            cityDetails =  JSON.parse(data);
-            for (var id in cityDetails) {
-                if(cityDetails[id].Country.ID.toUpperCase() === countyText.toUpperCase()){
-                    if(cityDetails[id].LocalizedName.toUpperCase() === locationText.toUpperCase())
-                        console.log("Calling Forcase API for Location: "+cityDetails[id].Key);
-                        callbackFromGetLocationIdByNameAndCountry(apiKey, cityDetails[id].Key)
-                        return;
+            apiResponse =  JSON.parse(data);
+            if(apiResponse.Code != undefined){
+                callbackDueToError(apiResponse.Code, apiResponse.Message);
+            }else {
+                let isLocationFound = false;
+                for (var id in apiResponse) {
+                    if(apiResponse[id].Country.ID.toUpperCase() === countyText.toUpperCase()){
+                        if(apiResponse[id].LocalizedName.toUpperCase() === locationText.toUpperCase())
+                            console.log("Calling Forcast API for Location: "+apiResponse[id].Key);
+                            isLocationFound = true;
+                            callbackFromGetLocationIdByNameAndCountry(apiKey, apiResponse[id].Key);
+                            return;
+                    }
                 }
+                if(!isLocationFound)
+                    console.log(chalk.red("The Given Location or Country Code is not valid. No weather data will be retreieved."))
             }
-            
         });
 
         
@@ -61,7 +74,7 @@ const getLocationWeatherByID = (apiKey, localtionId) => {
         resp.on('end', () => {
             weatherDetails =  JSON.parse(data);
             console.log(chalk.green("Date: "+weatherDetails.Headline.EffectiveDate));
-            console.log(chalk.green("Summary: "+weatherDetails.Headline.Text));
+            console.log(chalk.green("Weather Headline Summary: "+weatherDetails.Headline.Text));
         });
     }).on("error", (err) => {
         console.log("Error: " + err.message);
